@@ -590,8 +590,8 @@ class Sequential(Model, containers.Sequential):
         print('save model with reset rate', scale)
 
     def inhibit_weights(self, scale=0.2):
-        if scale<0 or scale>1:
-            scale = 0
+        if scale<=0 or scale>=1:
+            return
         lenth = len(self.layers)
         for k, l in enumerate(self.layers):
             # if k < (lenth-1):
