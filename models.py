@@ -723,6 +723,11 @@ class Sequential(Model, containers.Sequential):
             self.layers[k].set_weights(weights)
         f.close()
 
+    def output_weights(self):
+        for i in range(len(self.layers)):
+            print('==============================================================================================')
+            print('layer %d -- weights:' %i)
+            print(self.layers[i].get_weights())
 
 class Graph(Model, containers.Graph):
     '''Arbitrary connection graph.
