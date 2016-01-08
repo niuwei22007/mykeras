@@ -341,10 +341,6 @@ class Convolution2D(Layer):
         base_config = super(Convolution2D, self).get_config()
         return dict(list(base_config.items()) + list(config.items()))
 
-# added in 2015.12.29 22:22:00 for my own convolutional autoencoder network
-class ConvolutionAE(Layer):
-    pass
-
 
 class _Pooling1D(Layer):
     '''Abstract class for different pooling 1D layers.
@@ -588,7 +584,7 @@ class AveragePooling2D(_Pooling2D):
 
 
 class UpSampling1D(Layer):
-    '''Repeats each temporal step `length` times along the time axis.
+    '''Repeat each temporal step `length` times along the time axis.
 
     # Input shape
         3D tensor with shape: `(samples, steps, features)`.
@@ -613,7 +609,7 @@ class UpSampling1D(Layer):
 
     def get_output(self, train=False):
         X = self.get_input(train)
-        output = K.concatenate([X] * self.length, axis=1)
+        output = K.repeat_elements(X, self.length, axis=1)
         return output
 
     def get_config(self):
@@ -624,7 +620,7 @@ class UpSampling1D(Layer):
 
 
 class UpSampling2D(Layer):
-    '''Repeats the rows and columns of the data
+    '''Repeat the rows and columns of the data
     by size[0] and size[1] respectively.
 
     # Input shape
@@ -672,15 +668,8 @@ class UpSampling2D(Layer):
 
     def get_output(self, train=False):
         X = self.get_input(train)
-        if self.dim_ordering == 'th':
-            output = K.concatenate([X] * self.size[0], axis=2)
-            output = K.concatenate([output] * self.size[1], axis=3)
-        elif self.dim_ordering == 'tf':
-            output = K.concatenate([X] * self.size[0], axis=1)
-            output = K.concatenate([output] * self.size[1], axis=2)
-        else:
-            raise Exception('Invalid dim_ordering: ' + self.dim_ordering)
-        return output
+        return K.resize_images(X, self.size[0], self.size[1],
+                               self.dim_ordering)
 
     def get_config(self):
         config = {'name': self.__class__.__name__,
